@@ -231,6 +231,34 @@ typedef struct {
 /* D */ void adas_draw_overlay(const AdasResult *r, ...);
 ```
 
+| 함수 | 선언 | 정의 | 담당 |
+|---|---|---|---|
+| `adas_extract()` | `nc_adas_extract.h` | `nc_adas_extract.c` | A |
+| `adas_bottom_center()` | `nc_adas_geometry.h` | `nc_adas_geometry.c` | B |
+| `adas_on_freespace()` | `nc_adas_geometry.h` | `nc_adas_geometry.c` | B |
+| `adas_in_ego_lane()` | `nc_adas_geometry.h` | `nc_adas_geometry.c` | B |
+| `adas_evaluate_object()` | `nc_adas_risk.h` | `nc_adas_risk.c` | C |
+| `adas_evaluate_frame()` | `nc_adas_risk.h` | `nc_adas_risk.c` | C |
+| `adas_draw_overlay()` | `nc_adas_ui.h` | `nc_adas_ui.c` | D |
+
+`wayland_npu_app.c`에는 정의를 넣지 않습니다. E는 거기서 위 함수를 **호출만** 합니다.
+
+헤더 의존은 이렇게 갑니다.
+
+```text
+nc_adas_types.h          ← 타입만
+        ↑
+nc_adas_extract.h
+nc_adas_geometry.h
+nc_adas_risk.h
+nc_adas_ui.h
+        ↑
+wayland_npu_app.c        ← include 후 호출
+```
+
+각 `.c`는 자기 `.h`만 include하면 되고, 그 `.h`가 `nc_adas_types.h`를 include합니다. `adas_extract()`만 SDK 타입(`pp_result_buf`)이 필요해서 `nc_cnn_aiware_runtime.h`를 extract 쪽에 둡니다. geometry/risk/ui는 `AdasResult`만 보면 됩니다.
+
+
 E는 Makefile에 `risk_judge` 소스를 넣는 자리만 만들어 두고, `render()` 연결은 Day 2에 합니다.
 
 ### Day 1 종료 조건
@@ -514,3 +542,23 @@ demo_backup.mp4
 ```
 
 A는 extract가 끝나는 즉시 B로 붙습니다. D는 Day 2 이후 할 일이 적으니 Day 3 표 촬영, Day 4 존, Day 5 발표 자료를 맡는 편이 맞습니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
